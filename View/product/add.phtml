@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<body>
+    <table width="100%" align="center">
+        <form method="POST" action="index.php?c=product&a=insert">
+            <table align="center">
+                <tr align="center">
+                    <td><h2>ADD PRODUCTS</h2></td>
+                </tr>
+                <tr align="center">
+                    <td><input type="submit" value="SAVE"> 
+                        <button><a href="index.php?c=product&a=grid">CANCEL</a></button></td>
+                </tr>
+            </table>
+            <table border="2" align="center" cellpadding="10px">
+                 <tr>
+                    <td>Name</td>
+                    <td><input type="text" name="product[name]">
+                    </td>
+                </tr>
+                <tr>
+                    <td>sku</td>
+                    <td><input type="text" name="product[sku]">
+                    </td>
+                </tr>
+                <tr>
+                    <td>cost</td>
+                    <td><input type="text" name="product[cost]">
+                    </td>
+                </tr>
+                <?php $statusOptions = [1=>"Active" , 2=>"Inactive"];?>
+           <tr>
+              <td>Status</td>
+              <td>
+                 <select name="product[status]">
+                        <?php foreach ($statusOptions as $value => $label):?>
+                        <option value="<?php echo $value;?>"><?php echo $label;?></option>
+                        <?php endforeach; ?>
+                    </select>
+              </td>
+           </tr> 
+            </table>
+        </form>
+    </table>
+</body>
+</html>
