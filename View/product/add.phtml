@@ -7,7 +7,7 @@
 </head>
 <body>
     <table width="100%" align="center">
-        <form method="POST" action="index.php?c=product&a=insert">
+        <form method="POST" action="index.php?c=product&a=save">
             <table align="center">
                 <tr align="center">
                     <td><h2>ADD PRODUCTS</h2></td>
@@ -20,18 +20,23 @@
             <table border="2" align="center" cellpadding="10px">
                  <tr>
                     <td>Name</td>
-                    <td><input type="text" name="product[name]">
-                    </td>
+                    <td><input type="text" name="product[name]"></td>
                 </tr>
                 <tr>
-                    <td>sku</td>
-                    <td><input type="text" name="product[sku]">
-                    </td>
+                    <td>Sku</td>
+                    <td><input type="text" name="product[sku]"></td>
                 </tr>
                 <tr>
-                    <td>cost</td>
-                    <td><input type="text" name="product[cost]">
-                    </td>
+                    <td>Price</td>
+                    <td><input type="text" name="product[price]"></td>
+                </tr>
+                 <tr>
+                    <td>Quantity</td>
+                    <td><input type="text" name="product[quantity]"></td>
+                </tr>
+                 <tr>
+                    <td>description</td>
+                    <td><input type="text" name="product[description]"></td>
                 </tr>
                 <?php $statusOptions = [1=>"Active" , 2=>"Inactive"];?>
            <tr>
@@ -44,6 +49,21 @@
                     </select>
               </td>
            </tr> 
+           <?php $colorOptions = [1=>"Red" , 2=>"yellow", 3=>"blue", 4=>"brown"];?>
+           <tr>
+              <td>Color</td>
+              <td>
+                 <select name="product[color]">
+                        <?php foreach ($colorOptions as $value => $label):?>
+                        <option value="<?php echo $value;?>"><?php echo $label;?></option>
+                        <?php endforeach; ?>
+                    </select>
+              </td>
+           </tr>
+                <tr>
+                    <td>material</td>
+                    <td><input type="text" name="product[material]"></td>
+                </tr>
             </table>
         </form>
     </table>

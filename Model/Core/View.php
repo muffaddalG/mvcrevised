@@ -11,37 +11,37 @@ class Model_Core_View
  		}	
  	public function setTemplate($template)
  	{
- 		$this->template = $template;\
+ 		$this->template = $template;
  		return $this;
  	}
 
  	public function getTemplate()
  	{
- 		if ($this->template)
- 		 {
- 			$this->template;
- 		}
- 		return null;
+		return $this->template;
  	}
 
  	public function setData($data)
  	{
  		$this->data = $data;
- 		return $data;
+ 		return $this;
  	}
 
- 	public function getData()
+ 	public function getData($key = null)
  	{
- 		if ($this->data) 
- 		{
- 			 return $this->data;
- 		}
- 		return false;
+ 		if($key == null)
+		{
+			return $this->data;
+		}
+		if (array_key_exists($key, $this->data)) 
+		{
+			return $this->data[$key];
+		}
+		return null;
  	}
 
  	public function render()
  	{
- 		return "VIEW".DS.$this->getTemplate();
+ 		require_once 'View'.DS.$this->getTemplate();
  	}
 
 
