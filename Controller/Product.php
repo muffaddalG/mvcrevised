@@ -1,90 +1,123 @@
 <?php
 
-
 class Controller_Product extends Controller_Core_Action
 {
 	public function gridAction()
 	{
-		$adapter = Ccc::getModel('Core_Adapter');
-		$query = "SELECT * FROM `product`";
-		$products = $adapter->fetchAll($query);
-		require_once 'View/product/grid.phtml';
+		try 
+		{
+			$productRow = Ccc::getModel('Product_Row');
+			$query = "SELECT * FROM `product`";
+			$products = $productRow->fetchAll($query);
+			
+			$this->getView()->setTemplate('product/grid.phtml')->setData($products);
+			$this->render();
+		} 
+		catch (Exception $e) 
+		{
+			throw new Exception("Could not fetch products", 1);
+		}
+		$this->getView()->getTemplate('product/grid.phtml');
 	}
 
 	public function addAction()
 	{
-		require_once 'View/product/add.phtml';
-	}
-
-	public function insertAction()
-	{
-		$adapter = Ccc::getModel('Core_Adapter');
-		$request = $this->request();
-		if (!$request->isPost()) 
-		{
-		throw new Exception("Error Processing Request", 1);
-		}
-
-		$product = $request->getPost('product');
-		$created_at = date("Y-m-d h:i:s");
-		$query = "INSERT INTO `product`( `name`, `sku`, `cost`, `status` ) VALUES ('$product[name]','$product[sku]','$product[cost]','$product[status]')";
-		$insert = $adapter->insert($query);
-
-		if (!$insert) {
-		throw new Exception("Unable to insert record.", 1);
-		}
-		$this->redirect("index.php?c=product&a=grid");
+		$this->getView()->setTemplate('product/add.phtml');
+		$this->render();
 	}
 
 	public function editAction()
 	{
-		$adapter = Ccc::getModel('Core_Adapter');
-		$request = $this->request();
-		$id = $request->getParams('id');
-		$query = "SELECT * FROM `product` WHERE `product_id` = {$id}";
-		$product = $adapter->fetchRow($query);
-		require_once 'View/product/edit.phtml';
+		try 
+		{
+			$productRow = Ccc::getModel('Product_Row');
+			$request = $this->request();
+			$product_id = $request->getParams('id');
+			if (!$product_id) 
+			{
+				throw new Exception("ID Not There", 1);
+			}
+			$product = $productRow->load($product_id);
+			$query = "SELECT * FROM `product` WHERE `product_id` = {$product_id}";
+			$products = $productRow->fetchRow($query);
+			if(!$products)
+			{
+				throw new Exception("Product Not There", 1);
+			}
+			$this->getView()->setTemplate('product/edit.phtml')->setData($product);
+			$this->render();
+		} 
+		catch (Exception $e) 
+		{
+			throw new Exception("Product Not Found", 1);			
+		}
+		$this->getView()->getTemplate('product/edit.phtml');
 	}
 
-	public function updateAction()
+	public function saveAction()
 	{
-		$adapter = Ccc::getModel('Core_Adapter');
-		$request = $this->request();
-		if (!$request->isPost()) 
-		{
-			throw new Exception("invalid request", 1);
-		}
-		$product = $request->getPost('product');
-		$id =$request->getPost('id');
-		if (!$id) 
-		{
-			throw new Exception("id not found", 1);
+		try{
+			// echo "<pre>";
+			$request=Ccc::getModel('Core_Request');
+			
+			$data = $request->getPost('product');
+			// print_r($data); die();
+
+			if (!$data) {
+				throw new Exception("no data posted");
+			}
+			$id = $request->getParams('id');
+			// print_r($id); die();
+			if ($id) 
+			{
+				// echo 111; die();
+
+				$product=Ccc::getModel('Product_Row')->load($id);
+				$product->updated_at=date('Y-m-d H:i:s');
+				
+			}
+			else
+			{
+				$product= Ccc::getModel('Product_Row');
+				$product->created_at = date("Y-m-d h:i:s");
+				// print_r($product); die();
+			}
+			$product->setData($data);
+			// print_r($product);
+			// die;
+			$product->save();
+			// print_r($result); die();
 			
 		}
-		$date = date("Y-m-d h:i:s");
-		$query = "UPDATE `product` SET `sku`='$product[sku]',`cost`='$product[cost]',`status`='$product[status]' WHERE `product_id` = {$id}";
-		$result = $adapter->update($query);
-		$this->redirect("index.php?c=product&a=grid");
+		catch(Exception $e){	
+				echo "catch found";
+		}
+		header("Location: index.php?c=product&a=grid");
 	}
 
 	public function deleteAction()
 	{
-		$adapter = Ccc::getModel('Core_Adapter');
-		$request = $this->request();
-		$id = $_GET['id'];
-		if (!$id) 
+		try 
 		{
-			throw new Exception("Error Processing Request", 1);
-			
-		}
-		$query = "DELETE FROM `product` WHERE `product_id` = {$id}";
-		$result = $adapter->delete($query);
-		if (!$result) 
+			$productRow = Ccc::getModel('Product_Row');
+			$request = $this->request();
+			$product_id = $request->getParams('id');
+			if (!$product_id) 
+			{
+				throw new Exception("ID could not get.", 1);
+			}
+			$product = $productRow->load($product_id)->delete();
+			if (!$product) 
+			{
+				throw new Exception("Product Not Deleted.", 1);
+			}
+			header("Location: index.php?c=product&a=grid");
+		} 
+		catch (Exception $e) 
 		{
-			throw new Exception("cannot delete record", 1);
-			
+			throw new Exception("Product Not Deleted.", 1);	
 		}
-		$this->redirect("index.php?c=product&a=grid");
+		header("Location: index.php?c=product&a=grid");
 	}
 }
 

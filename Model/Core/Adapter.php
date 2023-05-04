@@ -5,7 +5,7 @@ class Model_Core_Adapter
 	public $servername ="localhost";
 	public $username ="root";
 	public $password ="";
-	public $databasename ="mvc-muffaddalgarbadawala";
+	public $databasename ="newmvc-muffaddalgarbadawala";
 
 	public function connect()
 	{
