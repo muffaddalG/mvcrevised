@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+</head>
+<body>
+    <table width="100%" align="center">
+        <form method="POST" action="index.php?c=category&a=save">
+            <table align="center">
+                <tr align="center">
+                    <td><h2>ADD CATEGORY</h2></td>
+                </tr>
+                <tr align="center">
+                    <td><input type="submit" value="SAVE"> 
+                        <button><a href="index.php?c=category&a=grid">CANCEL</a></button></td>
+                </tr>
+            </table>
+            <table border="2" align="center" cellpadding="10px">
+                 <tr>
+                    <td>Name</td>
+                    <td><input type="text" name="category[name]"></td>
+                </tr>
+                
+                 <tr>
+                    <td>description</td>
+                    <td><input type="text" name="category[description]"></td>
+                </tr>
+                <?php $statusOptions = [1=>"Active" , 2=>"Inactive"];?>
+           <tr>
+              <td>Status</td>
+              <td>
+                 <select name="category[status]">
+                        <?php foreach ($statusOptions as $value => $label):?>
+                        <option value="<?php echo $value;?>"><?php echo $label;?></option>
+                        <?php endforeach; ?>
+                    </select>
+              </td>
+           </tr>
+            </table>
+        </form>
+    </table>
+</body>
+</html>
