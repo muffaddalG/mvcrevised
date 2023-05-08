@@ -163,14 +163,15 @@ class Model_Core_Table_Row
 		
 		}else{
 			$id = $this->getData($this->getPrimaryKey());
-			$condition[$this->getPrimaryKey()] = $id;
-
-			$result = $this->getTable()->update($this->data, $condition);
-			if($result){
+			$update = $this->getTable()->update($this->data, $id);
+			// print_r($update);
+			// die;
+			if($update)
+			{
 				$this->load($id);
 				return $this;
 			}
-			return false;		
+			return null;
 		}
 	}
 }

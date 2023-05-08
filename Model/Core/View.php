@@ -36,7 +36,7 @@ class Model_Core_View
 		{
 			return $this->data[$key];
 		}
-		return null;
+		return null;
  	}
 
  	public function render()

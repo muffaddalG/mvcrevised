@@ -59,35 +59,23 @@ class Controller_Product extends Controller_Core_Action
 		try{
 			// echo "<pre>";
 			$request=Ccc::getModel('Core_Request');
-			
 			$data = $request->getPost('product');
-			// print_r($data); die();
-
 			if (!$data) {
 				throw new Exception("no data posted");
 			}
 			$id = $request->getParams('id');
-			// print_r($id); die();
 			if ($id) 
 			{
-				// echo 111; die();
-
 				$product=Ccc::getModel('Product_Row')->load($id);
-				$product->updated_at=date('Y-m-d H:i:s');
-				
+				$product->created_at=date('Y-m-d H:i:s');
 			}
 			else
 			{
 				$product= Ccc::getModel('Product_Row');
-				$product->created_at = date("Y-m-d h:i:s");
-				// print_r($product); die();
+				$product->updated_at = date("Y-m-d h:i:s");
 			}
 			$product->setData($data);
-			// print_r($product);
-			// die;
 			$product->save();
-			// print_r($result); die();
-			
 		}
 		catch(Exception $e){	
 				echo "catch found";

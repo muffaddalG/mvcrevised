@@ -83,12 +83,12 @@ class Model_Core_Table
 			throw new Exception("Error Processing Request", 1);
 		}
 		$final =[];
-		foreach ($condition as $key => $value) {
+		foreach ($data as $key => $value) {
 			$final[]= "`{$key}` = '{$value}' ";
 		}
 		if (is_array($condition)) {
 			$where =[];
-			foreach ($condition as $key => $value) {
+			foreach ($data as $key => $value) {
 			$where[]= "`{$key}` = '{$value}' ";	
 			}
 		$whereString = implode(" AND" ,$where);
