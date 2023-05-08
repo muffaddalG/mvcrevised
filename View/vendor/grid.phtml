@@ -1,0 +1,63 @@
+<?php
+require_once 'View/html/header.phtml';
+$vendors = $this->getData();
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> VENDORS</title>
+</head>
+<body>
+
+<table  width="100%" cellpadding="20">
+	<tr>
+	<td width="100%">
+		<h1 align="center">Modify Vendor</h1>
+	</td>
+</tr>
+</table>
+<table border="1" align="center">
+<tr >
+	<td  >
+		<a href="index.php?c=vendor&a=add">ADD NEW Vendor</a>
+	</td>
+	</tr>
+</table>
+<table border="1" width="100%" cellpadding="15"  >
+	<tr  >
+		<th>Vendor_id</th>
+		<th>Firstname</th>
+		<th>Lastname</th>
+		<th>Email</th>
+		<th>Gender</th>
+		<th>Mobile</th>
+		<th>Status</th>
+		<th>Company</th>
+		<th>Created_at</th>
+		<th>Updated_at</th>
+		<th>Edit</th>
+		<th>Delete</th>
+	</tr>
+ 	</tr>
+ 	<?php  foreach ($vendors as $vendor): ?>
+ 	<tr>
+ 		<td><?php echo $vendor->vendor_id; ?></td>
+ 		<td><?php echo $vendor->firstname; ?></td>
+ 		<td><?php echo $vendor->lastname; ?></td>
+ 		<td><?php echo $vendor->email; ?></td>
+ 		<td><?php echo $vendor->gender; ?></td>
+ 		<td><?php echo $vendor->mobile; ?></td>
+ 		<td><?php echo $vendor->status; ?></td>
+ 		<td><?php echo $vendor->company; ?></td>
+ 		<td><?php echo $vendor->created_at; ?></td>
+ 		<td><?php echo $vendor->updated_at; ?></td>
+ 		<td><a href="index.php?c=vendor&a=edit&id=<?php echo $vendor->vendor_id;?>">EDIT</a></td>
+ 		<td><a href="index.php?c=vendor&a=delete&id=<?php echo $vendor->vendor_id;?>">DELETE</a></td>
+ 	</tr>
+ 	<?php endforeach; ?>
+
+</table>
+</body>
+</html>
