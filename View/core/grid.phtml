@@ -1,0 +1,43 @@
+<?php
+$rows = $this->getCollection();
+?>
+<div class="content">
+    <table width="100%">
+        <tr>
+            <td><h3 align="left"><?php echo $this->getTitle(); ?></h3></td>
+            <?php foreach ($this->getButtons() as $key => $button) : ?>
+            <td><h3 align="right"><a href="<?php echo $button['url']; ?>"><?php echo $button['title']; ?></a></h3></td>
+            <?php endforeach; ?>
+        </tr>
+    </table>
+    <table width="100%">
+        <?php if (!$rows): ?>
+                No data found.
+        <?php else: ?>
+            <tr align="center">
+            <?php foreach ($this->getColumns() as $key => $column) : ?>
+                <th><?php echo $column['title']; ?></th>
+            <?php endforeach; ?>
+
+            <?php foreach ($this->getActions() as $key => $action) : ?>
+                <th><?php echo $action['title']; ?></th>
+            <?php endforeach; ?>
+        </tr>
+
+        <?php foreach ($rows as $row) : ?>
+        <tr align="center">
+            <?php foreach($this->getColumns() as $key => $column): ?>
+                <td><?php echo $this->getColumnValue($row, $key); ?></td>
+            <?php endforeach; ?>
+            <?php foreach($this->getActions() as $key => $action): ?>
+                <?php if ($action['title'] == 'Edit'):?>    
+                    <td><a href="<?php echo $this->getUrl($key,null,['id'=> $row->getId()],true)?>"><?php echo $action['title']?></a></td>
+                <?php elseif ($action['title'] == 'Delete'): ?>
+                    <td><a href="<?php echo $this->getUrl($key , null,['id'=> $row->getId()],true)?>"><?php echo $action['title']?></a></td>        
+                <?php endif; ?> 
+            <?php endforeach; ?>
+        </tr>
+        <?php endforeach; ?>
+        <?php endif; ?>
+    </table>
+</div>
