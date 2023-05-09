@@ -1,6 +1,6 @@
 <?php
 $vendor = $this->getData('vendor');
-$vendorAddress = $this->getData('vendorAddress');
+$vendor_address = $this->getData('vendor_address');
 ?>
 <!DOCTYPE html>
 <html>
@@ -11,7 +11,7 @@ $vendorAddress = $this->getData('vendorAddress');
 </head>
 <body>
     <table width="100%" align="center">
-        <form method="POST" action="index.php?c=vendor&a=save&id=<?php echo $vendor->vendor_id?>">
+        <form method="POST" action="<?php echo $this->getUrl('save'); ?>">
             <table align="center">
                 <tr align="center">
                     <td><h2>ADD VENDORS</h2></td>
@@ -34,7 +34,7 @@ $vendorAddress = $this->getData('vendorAddress');
                     <td>Email</td>
                     <td><input type="text" name="vendor[email]" value="<?php echo $vendor->email;?>"></td>
                 </tr>
-	             <?php $genderOptions = [1=>"male" , 2=>"female"];?>
+	             <?php $genderOptions = [1=>"Male" , 2=>"Female"];?>
 			    <tr>
 			      <td>gender</td>
 			      <td>
@@ -69,23 +69,23 @@ $vendorAddress = $this->getData('vendorAddress');
              <table border="2" align="center" cellpadding="10px">
                  <tr>
                     <td>Address</td>
-                    <td><input type="text" name="vendor_address[address]" value="<?php echo $vendorAddress->address;?>"></td>
+                    <td><input type="text" name="vendor_address[address]" value="<?php echo $vendor_address->address;?>"></td>
                 </tr>
                 <tr>
                     <td>City</td>
-                    <td><input type="text" name="vendor_address[city]" value="<?php echo $vendorAddress->city;?>"></td>
+                    <td><input type="text" name="vendor_address[city]" value="<?php echo $vendor_address->city;?>"></td>
                 </tr>
                 <tr>
                     <td>state</td>
-                    <td><input type="text" name="vendor_address[state]" value="<?php echo $vendorAddress->state;?>"></td>
+                    <td><input type="text" name="vendor_address[state]" value="<?php echo $vendor_address->state;?>"></td>
                 </tr>
                  <tr>
                     <td>Country</td>
-                    <td><input type="text" name="vendor_address[country]" value="<?php echo $vendorAddress->country;?>"></td>
+                    <td><input type="text" name="vendor_address[country]" value="<?php echo $vendor_address->country;?>"></td>
                 </tr>
                 <tr>
                     <td>Zipcode</td>
-                    <td><input type="text" name="vendor_address[zipcode]" value="<?php echo $vendorAddress->zipcode;?>"></td>
+                    <td><input type="text" name="vendor_address[zipcode]" value="<?php echo $vendor_address->zipcode;?>"></td>
                 </tr> 
        </table>
         </form>

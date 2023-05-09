@@ -5,7 +5,7 @@ class Controller_Core_Front
  	public function init()
 	{
 		$action = new Controller_Core_Action();
-		$request = $action->request();
+		$request = $action->getRequest();
 		$controller = $request->getControllerName();
 		$action = $request->getActionName().'Action';
 
