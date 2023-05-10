@@ -1,5 +1,5 @@
 <?php
-$product = $this->getData();
+$product = $this->getData('product');
 ?>
 <!DOCTYPE html>
 <html>
@@ -10,7 +10,7 @@ $product = $this->getData();
 </head>
 <body>
 	<table width="100%" align="center">
-		<form method="POST" action="index.php?c=product&a=save&id=<?php echo $product->product_id?>">
+		<form method="POST" action="<?php echo $this->getUrl('save');?>">
 			<table align="center">
 				<tr align="center">
 					<td><h2>EDIT PRODUCTS</h2></td>

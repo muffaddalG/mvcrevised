@@ -11,7 +11,7 @@ $customerAddress = $this->getData('customerAddress');
 </head>
 <body>
     <table width="100%" align="center">
-        <form method="POST" action="index.php?c=customer&a=save&id=<?php echo $customer->customer_id?>">
+        <form method="POST" action="<?php echo $this->getUrl('save');?>">
             <table align="center">
                 <tr align="center">
                     <td><h2>ADD CUSTOMERS</h2></td>
@@ -24,11 +24,11 @@ $customerAddress = $this->getData('customerAddress');
             <table border="2" align="center" cellpadding="10px">
                  <tr>
                     <td>Firstname</td>
-                    <td><input type="text" name="customer[firstname]" value="<?php echo $customer->firstname;?>"></td>
+                    <td><input type="text" name="customer[firstname]" value="<?php echo $customer->first_name;?>"></td>
                 </tr>
                 <tr>
                     <td>lastname</td>
-                    <td><input type="text" name="customer[lastname]" value="<?php echo $customer->lastname;?>"></td>
+                    <td><input type="text" name="customer[lastname]" value="<?php echo $customer->last_name;?>"></td>
                 </tr>
                 <tr>
                     <td>Email</td>

@@ -8,7 +8,7 @@ class Model_Core_Url
 	 	return $_SERVER['REQUEST_SCHEME']."://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 	 	 
 	 }
-	public function getUrl($action=null, $controller=null, array $params=[], $reset = false)
+	public function getUrl($action=null, $controller=null,$params=[], $reset = false)
 	{
 		$request = new Model_Core_Request();
 		$url = $this->getCurrentUrl();

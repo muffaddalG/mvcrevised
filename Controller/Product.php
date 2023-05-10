@@ -3,109 +3,121 @@
 class Controller_Product extends Controller_Core_Action
 {
 	public function gridAction()
-	{
-		try 
-		{
-			$productRow = Ccc::getModel('Product_Row');
-			$query = "SELECT * FROM `product`";
-			$products = $productRow->fetchAll($query);
-			
-			$this->getView()->setTemplate('product/grid.phtml')->setData($products);
-			$this->render();
-		} 
-		catch (Exception $e) 
-		{
-			throw new Exception("Could not fetch products", 1);
-		}
-		$this->getView()->getTemplate('product/grid.phtml');
+	{	
+		$layout = $this->getLayout();
+		$grid = $layout->createBlock('Product_Grid');
+		$layout->getChild('content')->addChild('grid',$grid);
+		$layout->render();
 	}
 
 	public function addAction()
 	{
-		$this->getView()->setTemplate('product/add.phtml');
-		$this->render();
+		try 
+		{
+			$layout = $this->getLayout();
+		    $edit = $layout->createBlock('Product_Edit');
+			$content = $layout->getChild('content')->addChild('edit', $edit);
+			$layout->render();
+		} 
+		
+		catch (Exception $e) 
+		{
+			$this->redirect('index.php?c=product&a=grid');
+		}
 	}
 
 	public function editAction()
 	{
 		try 
 		{
-			$productRow = Ccc::getModel('Product_Row');
-			$request = $this->request();
-			$product_id = $request->getParams('id');
-			if (!$product_id) 
+			$layout = $this->getLayout();
+			$productModel = Ccc::getModel('Product');
+			$id = $this->getRequest()->getParams('id');
+			if (!$id) 
 			{
-				throw new Exception("ID Not There", 1);
+				throw new Exception("Id Not Found", 1);
 			}
-			$product = $productRow->load($product_id);
-			$query = "SELECT * FROM `product` WHERE `product_id` = {$product_id}";
-			$products = $productRow->fetchRow($query);
-			if(!$products)
+			if(!$product = $productModel->load($id)) 
 			{
-				throw new Exception("Product Not There", 1);
+				throw new Exception("Invaild Request.", 1);
 			}
-			$this->getView()->setTemplate('product/edit.phtml')->setData($product);
-			$this->render();
-		} 
+			$edit = new Block_Product_Edit();
+			$content = $layout->getChild('content')->addChild('edit',$edit);
+			$edit->setData(['product'=>$product]);
+			$layout->render();
+		}  
 		catch (Exception $e) 
 		{
 			throw new Exception("Product Not Found", 1);			
 		}
-		$this->getView()->getTemplate('product/edit.phtml');
+		$this->getView()->getTemplate('edit');
 	}
+
 
 	public function saveAction()
 	{
-		try{
-			// echo "<pre>";
-			$request=Ccc::getModel('Core_Request');
-			$data = $request->getPost('product');
-			if (!$data) {
-				throw new Exception("no data posted");
-			}
-			$id = $request->getParams('id');
-			if ($id) 
+		try 
+		{
+			$url = Ccc::getModel('Core_Url');
+			if(!$this->getRequest()->isPost())
 			{
-				$product=Ccc::getModel('Product_Row')->load($id);
-				$product->created_at=date('Y-m-d H:i:s');
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($productData = $this->getRequest()->getPost('product')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			$productModel = Ccc::getModel('Product');
+			if($product_id = $this->getRequest()->getParams('id'))
+			{
+				if(!($productModel = $productModel->load($product_id))->load($product_id,'product_id'))
+				{
+					throw new Exception("Invaild Request.", 1);
+				}
+			}
+			if($productModel->product_id)
+			{
+				$productModel->updated_at = date('Y-m-d H:i:s');
 			}
 			else
 			{
-				$product= Ccc::getModel('Product_Row');
-				$product->updated_at = date("Y-m-d h:i:s");
+				$productModel->created_at = date('Y-m-d H:i:s');
 			}
-			$product->setData($data);
-			$product->save();
+			$productModel->setData($productData);
+			if(!($insert_id = $productModel->save()))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
 		}
-		catch(Exception $e){	
-				echo "catch found";
+			catch (Exception $e) 
+		{
+
 		}
-		header("Location: index.php?c=product&a=grid");
+			$this->redirect('index.php?c=product&a=grid');
 	}
 
 	public function deleteAction()
 	{
 		try 
 		{
-			$productRow = Ccc::getModel('Product_Row');
-			$request = $this->request();
+			$productModel = Ccc::getModel('Product');
+			$url = Ccc::getModel('Core_Url');
+			$request = $this->getRequest();
 			$product_id = $request->getParams('id');
 			if (!$product_id) 
 			{
 				throw new Exception("ID could not get.", 1);
 			}
-			$product = $productRow->load($product_id)->delete();
-			if (!$product) 
+			$product = $productModel->load($product_id)->delete();
+			if(!$product)
 			{
-				throw new Exception("Product Not Deleted.", 1);
+				throw new Exception("Data can not deleted.", 1);
 			}
-			header("Location: index.php?c=product&a=grid");
 		} 
 		catch (Exception $e) 
 		{
-			throw new Exception("Product Not Deleted.", 1);	
 		}
-		header("Location: index.php?c=product&a=grid");
+		$this->redirect($url->getUrl('grid'));
 	}
 }
 

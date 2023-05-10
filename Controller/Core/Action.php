@@ -6,13 +6,33 @@ class Controller_Core_Action
 	protected $view= null;
     protected $layout = null;
     protected $request = null;
+    protected $url = null;
+    protected $adapter = null;
+
+
+    protected function setAdapter(Model_Core_Adapter $adapter)
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
+    public function getAdapter()
+    {
+        if ($this->adapter) 
+        {
+            return $this->adapter;          
+        }
+        $adapter = new Model_Core_Adapter();
+        $this->setAdapter($adapter); 
+        return $adapter;
+    }
 
 
 	public function redirect($url)
-	{
-		header("location:$url");
-		exit();
-	}
+    {
+        header("location:$url");
+        exit();
+    }
 
   public function setRequest(Model_Core_Request $request)
 	{

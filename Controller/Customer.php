@@ -7,111 +7,131 @@ class Controller_Customer extends Controller_Core_Action
 {
 	public function gridAction()
 	{
-		try 
-		{
-			$customerRow = Ccc::getModel('Customer_Row');
-			$query = "SELECT * FROM `customer`";
-			$customers=$customerRow->fetchAll($query);
-			$this->getView()->setTemplate('customer/grid.phtml')->setData($customers);
-			$this->render();
-		} 
-		catch (Exception $e)
-		 {
-			throw new Exception("could not fetch customer", 1);
-		}
-		$this->getView()->getTemplate('customer/grid.phtml');
+		$layout = $this->getLayout();
+		$grid = $layout->createBlock('Customer_Grid');
+		$layout->getChild('content')->addChild('grid',$grid);
+		$layout->render();
 	}
 
 	public function addAction()
 	{
-		$this->getView()->setTemplate('customer/add.phtml');
-		$this->render();
+		try 
+		{
+			$layout = $this->getLayout();
+		    $edit = $layout->createBlock('Customer_Edit');
+			$content = $layout->getChild('content')->addChild('edit', $edit);
+			$layout->render();
+		} 
+		
+		catch (Exception $e) 
+		{
+			$this->redirect('index.php?c=customer&a=grid');
+		}
 	}
 
 	public function editAction()
 	{
 		try 
 		{
-			$customerRow = Ccc::getModel('Customer_Row');
-			$customerAddressRow = Ccc::getModel('Customer_Address_Row');
-			$request = $this->request();
-			$customer_id = $request->getParams('id');
-			$customer = $customerRow->load($customer_id);
-			$customerAddress = $customerAddressRow->load($customer_id,'customer_id');
-			$this->getView()->setTemplate('customer/edit.phtml')->setData(['customer'=>$customer, 'customerAddress'=>$customerAddress])->render();
+			$layout = $this->getLayout();
+		    $edit = $layout->createBlock('Customer_Edit');
+			$customerModel = Ccc::getModel('Customer');
+			$customerAddressModel = Ccc::getModel('Customer_Address');
+			if(!($customer_id = $this->getRequest()->getParams('id')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($customer = $customerModel->load($customer_id)) || !($customer_address = $customerAddressModel->load($customer_id,'customer_id')))
+		{
+			throw new Exception("Error Processing Request", 1);
+		}
+			$content = $layout->getChild('content')->addChild('edit', $edit);
+			$edit->setData(['customer'=>$customer, 'customer_address'=>$customer_address]);
+			$layout->render();			
 		} 
 		catch (Exception $e) 
 		{
-			throw new Exception("customer Not Found", 1);			
 		}
-		$this->getView()->getTemplate('customer/edit.phtml');
+			$this->redirect('index.php?c=customer&a=grid');
 	}
 
 	public function saveAction()
-	{
-		try
+	{ 
+		try 
 		{
-			$request = $this->request();
-			$customerData = $request->getPost('customer');
-			$id=$request->getParams('id');
-			if ($id) 
+			$url = Ccc::getModel('Core_Url');
+			if(!$this->getRequest()->isPost())
 			{
-				$customer=Ccc::getModel('Customer_Row')->load($id);
-				$customer->updated_at=date('Y-m-d H:i:s');
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($customerData = $this->getRequest()->getPost('customer')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($customeraddressData = $this->getRequest()->getPost('customer_address')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			$customerModel = Ccc::getModel('Customer');
+			$customer_address = Ccc::getModel('Customer_Address');
+			if($customer_id = $this->getRequest()->getParams('id'))
+			{
+				if(!($customerModel = $customerModel->load($customer_id)) || !($customer_address = $customer_address->load($customer_id,'customer_id')))
+				{
+					throw new Exception("Invaild Request.", 1);
+				}
+			}
+			if($customerModel->customer_id)
+			{
+				$customerModel->updated_at = date('Y-m-d H:i:s');
 			}
 			else
 			{
-				$customer= Ccc::getModel('Customer_Row');
-				$customer->created_at = date("Y-m-d h:i:s");
+				$customerModel->created_at = date('Y-m-d H:i:s');
 			}
-			$customer->setData($customerData);
-			$customer->save();
-			// print_r($customer);
-			// die;
-
-			$customerAddressData = $this->request()->getpost('customer_address');
-			if ($id = (int)$this->request()->getParams('id')) 
+			$customerModel->setData($customerData);
+			if(!($insert_id = $customerModel->save()))
 			{
-			$customerAddress = Ccc::getModel('Customer_Address_Row')->load($id);
+				throw new Exception("Invaild Request.", 1);
 			}
-			else
+			if(!$customer_address->address_id)
 			{
-				$customerAddress = Ccc::getModel('Customer_Address_Row');
-				$customerAddress->customer_id = $customer->customer_id;
+				$customer_address->customer_id = $insert_id;
 			}
-				$customerAddress->setData($customerAddressData);
-				$customerAddress->save();
+			$customer_address->setData($customeraddressData);
+			if(!$customer_address->save())
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+		} 
+		catch (Exception $e) 
+		{
 		}
-		catch(Exception $e)
-		{	
-			echo "catch found";
-		}
-		header("Location: index.php?c=customer&a=grid");
+			$this->redirect('index.php?c=customer&a=grid');		
 	}
 
 	public function deleteAction()
 	{
 		try 
 		{
-			$customerRow = Ccc::getModel('Customer_Row');
-			$request = $this->request();
+			$customerModel = Ccc::getModel('Customer');
+			$url = Ccc::getModel('Core_Url');
+			$request = $this->getRequest();
 			$customer_id = $request->getParams('id');
 			if (!$customer_id) 
 			{
 				throw new Exception("ID could not get.", 1);
 			}
-			$customer = $customerRow->load($customer_id)->delete();
-			if (!$customer) 
+			$customer = $customerModel->load($customer_id)->delete();
+			if(!$customer)
 			{
-				throw new Exception("customer Not Deleted.", 1);
+				throw new Exception("Data can not deleted.", 1);
 			}
-			header("Location: index.php?c=customer&a=grid");
 		} 
 		catch (Exception $e) 
 		{
-			throw new Exception("customer Not Deleted.", 1);	
 		}
-		header("Location: index.php?c=customer&a=grid");
+		$this->redirect($url->getUrl('grid'));
 	}
 }
 

@@ -4,6 +4,8 @@ class Block_Core_Template extends Model_Core_View
 {
 	protected $children = [];
 	protected $layout = null;
+	protected $pager = null;
+
 
 	public function __construct()
 	{
@@ -52,6 +54,21 @@ class Block_Core_Template extends Model_Core_View
 			unset($this->children[$key]);
 		}
 		return $this;
+	}
+	public function setPager($pager)
+	{
+		$this->pager = $pager;
+		return $this;
+	}
+
+	public function getPager()
+	{
+		if ($this->pager) {
+			return $this->pager;
+		}
+		$pager = new Block_Core_Pager();
+		$this->setPager($pager);
+		return $pager;
 	}
 }
 

@@ -1,5 +1,5 @@
 <?php
-$category = $this->getData();
+$category = $this->getData('category');
 
 ?>
 <!DOCTYPE html>
@@ -11,7 +11,7 @@ $category = $this->getData();
 </head>
 <body>
 	<table width="100%" align="center">
-		<form method="POST" action="index.php?c=category&a=save&id=<?php echo $category->category_id?>">
+		<form method="POST" action="<?php echo $this->getUrl('save');?>">
 			<table align="center">
 				<tr align="center">
 					<td><h2>EDIT CATEGORY</h2></td>

@@ -6,7 +6,7 @@ class Model_Core_Table_Resource
 	public $tableName = null;
 	public $primaryKey = null;
 
-	public function setAdapter(Model_Core_Adapter$adapter)
+	public function setAdapter(Model_Core_Adapter $adapter)
 	{
 		$this->adapter = $adapter;
 		return $this;
@@ -45,36 +45,35 @@ class Model_Core_Table_Resource
 		return $this->primaryKey;
 	}
 
-	public function fetchAll($query=null)
+	public function fetchAll($query)
 	{
-		if ($query == null ) 
-		{
-			$query = "SELECT * FROM `{$this->getTableName()}` ORDER BY `{$this->getPrimaryKey()}` ASC";
+		$adapter = $this->getAdapter();
+		$result = $adapter->fetchAll($query);
+		if(!$result){
+			return false;
 		}
-		$result = $this->getAdapter()->fetchAll($query);
 		return $result;
 	}
 
-	public function fetchRow($query=null)
+	public function fetchRow($query)
 	{
-		if ($query == null ) 
-		{
-			$query = "SELECT * FROM `{$this->getTableName()}` WHERE ORDER BY `{$this->getPrimaryKey()}` ASC";
+		$adapter = $this->getAdapter();
+		$result = $adapter->fetchRow($query);
+		if(!$result){
+			return false;
 		}
-		$result = $this->getAdapter()->fetchRow($query);
 		return $result;
 	}
 
-	public function insert($data = [])
+	public function insert($arrayData)
 	{
-		if (!$data) 
-		{
-			throw new Exception("Data not found", 1);
+		$keyString = '`'.implode('`,`', array_keys($arrayData)).'`';
+		$valueString = "'".implode("','", array_values($arrayData))."'";
+		$sql = "INSERT INTO `{$this->getTableName()}` ({$keyString}) VALUES ({$valueString})";
+		$result = $this->getAdapter()->insert($sql);
+		if(!$result){
+			return false;
 		}
-		$keys = "`".implode("`,`", array_keys($data))."`";
-		$values = "'".implode("','", array_values($data))."'";
-		$query = "INSERT INTO `{$this->getTableName()}` ({$keys}) VALUES ({$values})";
-		$result = $this->getAdapter()->insert($query);
 		return $result;
 	}
 

@@ -1,17 +1,17 @@
 <?php
 
-class Block_Vendor_Grid extends Block_Core_Grid
+class Block_Category_Grid extends Block_Core_Grid
 {
-	
+
 	public function __construct()
 	{
 		parent::__construct();
-		$this->setTitle('Manage Vendor');
-	}
+		$this->setTitle('MANAGE Category');
+	} 
 
 	public function getCollection()
 	{
-		$query = "SELECT count('vendor_id') FROM `vendor`";
+		$query = "SELECT count('category_id') FROM `category`";
 		$totalRecords = Ccc::getModel('Core_Adapter')->fetchOne($query);
 		$currentPage = Ccc::getModel('Core_Request')->getParams('p',1);
 		$pager = Ccc::getModel('Core_Pager');
@@ -19,36 +19,25 @@ class Block_Vendor_Grid extends Block_Core_Grid
 		$pager->calculate();
 		$this->setPager($pager);
 
-		$query = "SELECT * FROM `vendor` LIMIT $pager->startLimit,$pager->recordPerPage";
-		$vendors = Ccc::getModel('vendor')->fetchAll($query);
-		return $vendors->getData();
+		$query = "SELECT * FROM `category` LIMIT $pager->startLimit,$pager->recordPerPage";
+		$categories = Ccc::getModel('category')->fetchAll($query);
+		return $categories->getData();
+
 	}
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('vendor_id', [
-			'title'=>'vendor_Id'
+		$this->addColumn('category_id', [
+			'title'=>'category_Id'
 		]);		
-		$this->addColumn('firstname', [
-			'title'=>'FirstName'
-		]);		
-		$this->addColumn('lastname', [
-			'title'=>'LastName'
-		]);	
-		$this->addColumn('email', [
-			'title'=>'Email'
-		]);		
-		$this->addColumn('gender', [
-			'title'=>'gender'
-		]);			
-		$this->addColumn('mobile', [
-			'title'=>'Mobile'
+		$this->addColumn('name', [
+			'title'=>'Name'
 		]);		
 		$this->addColumn('status', [
 			'title'=>'Status'
-		]);		
-		$this->addColumn('company', [
-			'title'=>'Company'
+		]);	
+		$this->addColumn('description', [
+			'title'=>'Description'
 		]);		
 		$this->addColumn('created_at', [
 			'title'=>'Created At'
@@ -78,14 +67,12 @@ class Block_Vendor_Grid extends Block_Core_Grid
 
 	protected function _prepareButtons()
 	{
-		$this->addButton('vendor_id', [
-			'title' => 'ADD Vendor',
+		$this->addButton('category_id', [
+			'title' => 'ADD category',
 			'url' => $this->getUrl('add')
 		]);
 
 		return parent::_prepareButtons();		
 	}
-
 }
-
 ?>
