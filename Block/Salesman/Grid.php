@@ -1,17 +1,19 @@
 <?php
 
-class Block_Vendor_Grid extends Block_Core_Grid
+
+
+class Block_Salesman_Grid extends Block_Core_Grid
 {
 	
-	public function __construct()
+	function __construct()
 	{
 		parent::__construct();
-		$this->setTitle('Manage Vendor');
+		$this->setTitle('MANAGE SALESMAN');
 	}
 
 	public function getCollection()
 	{
-		$query = "SELECT count('vendor_id') FROM `vendor`";
+		$query = "SELECT count('salesman_id') FROM `salesman`";
 		$totalRecords = Ccc::getModel('Core_Adapter')->fetchOne($query);
 		$currentPage = Ccc::getModel('Core_Request')->getParams('p',1);
 		$pager = Ccc::getModel('Core_Pager');
@@ -19,15 +21,15 @@ class Block_Vendor_Grid extends Block_Core_Grid
 		$pager->calculate();
 		$this->setPager($pager);
 
-		$query = "SELECT * FROM `vendor` LIMIT $pager->startLimit,$pager->recordPerPage";
-		$vendors = Ccc::getModel('vendor')->fetchAll($query);
-		return $vendors->getData();
+		$query = "SELECT * FROM `salesman` LIMIT $pager->startLimit,$pager->recordPerPage";
+		$salesmans = Ccc::getModel('salesman')->fetchAll($query);
+		return $salesmans->getData();
 	}
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('vendor_id', [
-			'title'=>'vendor_Id'
+		$this->addColumn('salesman_id', [
+			'title'=>'Salesman_Id'
 		]);		
 		$this->addColumn('firstname', [
 			'title'=>'FirstName'
@@ -78,14 +80,15 @@ class Block_Vendor_Grid extends Block_Core_Grid
 
 	protected function _prepareButtons()
 	{
-		$this->addButton('vendor_id', [
-			'title' => 'ADD Vendor',
+		$this->addButton('salesman_id', [
+			'title' => 'ADD Salesman',
 			'url' => $this->getUrl('add')
 		]);
 
 		return parent::_prepareButtons();		
 	}
-
 }
+
+
 
 ?>

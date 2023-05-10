@@ -36,6 +36,17 @@ class Model_Core_Table
 		unset ($this->data[$key]);
 	}
 
+	public function setPrimaryKey($primaryKey)
+	{
+		$this->getResource()->setPrimaryKey($primaryKey);
+		return $this;
+	}
+
+	public function getPrimaryKey()
+	{
+		return $this->getResource()->getPrimaryKey();
+	}
+
 	public function setId($id)
 	{
 		$this->data[$this->getResource()->getPrimaryKey()] = (int) $id;
@@ -188,30 +199,23 @@ class Model_Core_Table
 
 	public function save()
 	{
-		if (!array_key_exists($this->getResource()->getPrimaryKey(), $this->data)) 
-		{
-			$insert = $this->getResource()->insert($this->data);
-			if ($insert) 
-			{
-				return $insert;
+		if($id = $this->getId()){
+			$this->removeData($this->getPrimaryKey());
+			$result = $this->getResource()->update($this->data, $id);
+			if(is_array($id)){
+				return $this;
 			}
-			return null;
+			if(!$result){
+				return false;
+			}			
+			return $this->load($id);			
 		}
-		else
-		{
-			$id = $this->data[$this->getResource()->getPrimaryKey()];
-			if (!$id) 
-			{
-				throw new Exception("id not found", 1);
-				
+		else{
+			$result = $this->getResource()->insert($this->data);
+			if(!$result){
+				return false;
 			}
-			$update = $this->getResource()->update($this->data,$id);
-			if ($update) 
-			{
-				$this->load($id);
-				return$this;
-			}
-			return null;
+			return $this->load($result);
 		}
 	}
 }

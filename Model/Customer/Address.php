@@ -1,13 +1,10 @@
-<?php
+<?php 
 
 class Model_Customer_Address extends Model_Core_Table
 {
-	
-	function __construct()
+	public function __construct()
 	{
-		$this->setTableName('customer_address');
-		$this->setPrimaryKey('address_id');
+		$this->setResourceClass('Model_Customer_Address_Resource')->setCollectionClass('Model_Customer_Address_Collection');
 	}
 }
-
 ?>

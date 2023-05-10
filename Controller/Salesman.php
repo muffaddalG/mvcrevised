@@ -4,114 +4,131 @@ class Controller_Salesman extends Controller_Core_Action
 {
 	public function gridAction()
 	{
-		try 
-		{
-			$salesmanRow = Ccc::getModel('Salesman_Row');
-			$query = "SELECT * FROM `salesman`";
-			$salesmans = $salesmanRow->fetchAll($query);
-			if(!$salesmans)
-			{
-				throw new Exception("Could not fetch salesmans", 1);
-			}
-			$this->getView()->setTemplate('salesman/grid.phtml')->setData($salesmans);
-			$this->render();
-		} 
-		catch (Exception $e) 
-		{
-			throw new Exception("Could not fetch salesmans", 1);
-		}
-		$this->getView()->getTemplate('salesman/grid.phtml');
+		$layout = $this->getLayout();
+		$grid = $layout->createBlock('Salesman_Grid');
+		$layout->getChild('content')->addChild('grid',$grid);
+		$layout->render();
 	}
 
 	public function addAction()
 	{
-		$this->getView()->setTemplate('salesman/add.phtml');
-		$this->render();
+		try 
+		{
+			$layout = $this->getLayout();
+		    $edit = $layout->createBlock('Salesman_Edit');
+			$content = $layout->getChild('content')->addChild('edit', $edit);
+			$layout->render();
+		} 
+		
+		catch (Exception $e) 
+		{
+			$this->redirect('grid');
+		}
 	}
 	
 	public function editAction()
 	{
 		try 
 		{
-			$salesmanRow = Ccc::getModel('Salesman_Row');
-			$salesmanAddressRow = Ccc::getModel('Salesman_Address_Row');
-			$request = $this->request();
-			$salesman_id = $request->getParams('id');
-			$salesman = $salesmanRow->load($salesman_id);
-			$salesmanAddress = $salesmanAddressRow->load($salesman_id,'salesman_id');
-			$this->getView()->setTemplate('salesman/edit.phtml')->setData(['salesman'=>$salesman, 'salesmanAddress'=>$salesmanAddress])->render();
+			$layout = $this->getLayout();
+		    $edit = $layout->createBlock('Salesman_Edit');
+			$salesmanModel = Ccc::getModel('Salesman');
+			$salesmanAddressModel = Ccc::getModel('Salesman_Address');
+			if(!($salesman_id = $this->getRequest()->getParams('id')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($salesman = $salesmanModel->load($salesman_id)) || !($salesman_address = $salesmanAddressModel->load($salesman_id,'salesman_id')))
+		{
+			throw new Exception("Error Processing Request", 1);
+		}
+			$content = $layout->getChild('content')->addChild('edit', $edit);
+			$edit->setData(['salesman'=>$salesman, 'salesman_address'=>$salesman_address]);
+			$layout->render();			
 		} 
 		catch (Exception $e) 
 		{
-			throw new Exception("salesman Not Found", 1);			
 		}
-		$this->getView()->getTemplate('salesman/edit.phtml');
+			$this->redirect('index.php?c=salesman&a=grid');
 	}
 
 	public function saveAction()
 	{
-		try
+		try 
 		{
-			$request = $this->request();
-			$salesmanData = $request->getPost('salesman');
-			$id=$request->getParams('id');
-			if ($id) 
+			$url = Ccc::getModel('Core_Url');
+			if(!$this->getRequest()->isPost())
 			{
-				$salesman=Ccc::getModel('Salesman_Row')->load($id);
-				$salesman->updated_at=date('Y-m-d H:i:s');
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($salesmanData = $this->getRequest()->getPost('salesman')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			if(!($salesmanaddressData = $this->getRequest()->getPost('salesman_address')))
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+			$salesmanModel = Ccc::getModel('Salesman');
+			$salesman_address = Ccc::getModel('Salesman_Address');
+			if($salesman_id = $this->getRequest()->getParams('id'))
+			{
+				if(!($salesmanModel = $salesmanModel->load($salesman_id)) || !($salesman_address = $salesman_address->load($salesman_id,'salesman_id')))
+				{
+					throw new Exception("Invaild Request.", 1);
+				}
+			}
+			if($salesmanModel->salesman_id)
+			{
+				$salesmanModel->updated_at = date('Y-m-d H:i:s');
 			}
 			else
 			{
-				$salesman= Ccc::getModel('Salesman_Row');
-				$salesman->created_at = date("Y-m-d h:i:s");
+				$salesmanModel->created_at = date('Y-m-d H:i:s');
 			}
-			$salesman->setData($salesmanData);
-			$salesman->save();
-
-			$salesmanAddressData = $this->request()->getpost('salesman_address');
-			if ($id = (int)$this->request()->getParams('id')) 
+			$salesmanModel->setData($salesmanData);
+			if(!($insert_id = $salesmanModel->save()))
 			{
-			$salesmanAddress = Ccc::getModel('Salesman_Address_Row')->load($id);
+				throw new Exception("Invaild Request.", 1);
 			}
-			else
+			if(!$salesman_address->address_id)
 			{
-				$salesmanAddress = Ccc::getModel('Salesman_Address_Row');
-				$salesmanAddress->salesman_id = $salesman->salesman_id;
+				$salesman_address->salesman_id = $insert_id;
 			}
-				$salesmanAddress->setData($salesmanAddressData);
-				$salesmanAddress->save();
+			$salesman_address->setData($salesmanaddressData);
+			if(!$salesman_address->save())
+			{
+				throw new Exception("Invaild Request.", 1);
+			}
+		} 
+		catch (Exception $e) 
+		{
 		}
-		catch(Exception $e)
-		{	
-			echo "catch found";
-		}
-		header("Location: index.php?c=salesman&a=grid");
+			$this->redirect('index.php?c=salesman&a=grid');
 	}
-
 
 	public function deleteAction()
 	{
 		try 
 		{
-			$salesmanRow = Ccc::getModel('Salesman_Row');
-			$request = $this->request();
+			$salesmanModel = Ccc::getModel('Salesman');
+			$url = Ccc::getModel('Core_Url');
+			$request = $this->getRequest();
 			$salesman_id = $request->getParams('id');
 			if (!$salesman_id) 
 			{
 				throw new Exception("ID could not get.", 1);
 			}
-			$salesman = $salesmanRow->load($salesman_id)->delete();
-			if (!$salesman) 
+			$salesman = $salesmanModel->load($salesman_id)->delete();
+			if(!$salesman)
 			{
-				throw new Exception("salesman Not Deleted.", 1);
+				throw new Exception("Data can not deleted.", 1);
 			}
-			header("Location: index.php?c=salesman&a=grid");
 		} 
 		catch (Exception $e) 
 		{
-			throw new Exception("salesman Not Deleted.", 1);	
 		}
-		header("Location: index.php?c=salesman&a=grid");
+		$this->redirect($url->getUrl('grid'));
 	}
 }
 

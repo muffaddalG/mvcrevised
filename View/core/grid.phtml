@@ -1,5 +1,6 @@
 <?php
 $rows = $this->getCollection();
+$pager = $this->getPager();
 ?>
 <div class="content">
     <table width="100%">
@@ -39,5 +40,17 @@ $rows = $this->getCollection();
         </tr>
         <?php endforeach; ?>
         <?php endif; ?>
+
+<?php if($pager->getNumberOfPages()>1): ?>
+           <button> <a href="<?php echo $this->getUrl('grid',null,['p'=>$pager->getStart()],true); ?>">Start</a></button>
+           <button> <a href="<?php echo $this->getUrl('grid',null,['p'=>$pager->getPrevious()],true); ?>">Previous</a></button>
+            <button><a href="<?php echo $this->getUrl('grid',null,['p'=>$pager->getCurrentPage()],true); ?>">Current</a></button>
+            <button><a href="<?php echo $this->getUrl('grid',null,['p'=>$pager->getNext()],true); ?>">Next</a></button>
+           <button> <a href="<?php echo $this->getUrl('grid',null,['p'=>$pager->getEnd()],true); ?>">End</a></button>
+        </ul>
+    </nav>
+    <?php endif;?>        
+        
+  
     </table>
 </div>
